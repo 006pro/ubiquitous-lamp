@@ -1,0 +1,44 @@
+Stand-out: live vs recorded drift — mortgage-extract on all three fixtures, 3 live runs each
+recorded: <venv>/Scripts/mortgage-extract fixtures/documents/<doc>.txt --mode replay            (shipped recording, model=claude-haiku-4-5)
+live:     <venv>/Scripts/mortgage-extract fixtures/documents/<doc>.txt --mode record --model claude-haiku-4-5-20251001 -v
+run at:   2026-10-18T07:47Z through the course proxy (ANTHROPIC_BASE_URL=https://claude.vocareum.com)
+
+=================== income_sum_mismatch.txt
+live run 1: exit=1  CRASHED — no extraction produced. Error:
+    Traceback (most recent call last):
+    pydantic_core._pydantic_core.ValidationError: 1 validation error for MortgageExtraction
+    loan.amount
+      Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+live run 2: exit=1  IDENTICAL to recording
+live run 3: exit=1  CRASHED — no extraction produced. Error:
+    Traceback (most recent call last):
+    pydantic_core._pydantic_core.ValidationError: 1 validation error for MortgageExtraction
+    loan
+      Input should be a valid dictionary or instance of Loan [type=model_type, input_value='{\n  "amount": <UNKNOWN>\n}', input_type=str]
+
+=================== appraisal_informal_sqft.txt
+live run 1: exit=1  CRASHED — no extraction produced. Error:
+    Traceback (most recent call last):
+    pydantic_core._pydantic_core.ValidationError: 1 validation error for MortgageExtraction
+    loan.amount
+      Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+live run 2: exit=1  CRASHED — no extraction produced. Error:
+    Traceback (most recent call last):
+    pydantic_core._pydantic_core.ValidationError: 1 validation error for MortgageExtraction
+    loan.amount
+      Input should be a valid number [type=float_type, input_value=None, input_type=NoneType]
+live run 3: exit=1  CRASHED — no extraction produced. Error:
+    Traceback (most recent call last):
+    pydantic_core._pydantic_core.ValidationError: 1 validation error for MortgageExtraction
+    loan
+      Input should be a valid dictionary or instance of Loan [type=model_type, input_value='{\n  "amount": <UNKNOWN>...urpose_detail": null\n}', input_type=str]
+
+=================== income_missing_bonus.txt
+live run 1: exit=0  DIFFERS from recording:
+    -      "base_monthly": 5673.08,
+    +      "base_monthly": 12326.67,
+live run 2: exit=0  DIFFERS from recording:
+    -      "base_monthly": 5673.08,
+    +      "base_monthly": 12318.5,
+live run 3: exit=0  IDENTICAL to recording
+

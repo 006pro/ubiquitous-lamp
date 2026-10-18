@@ -1,0 +1,43 @@
+$ <venv>/Scripts/python run_policy_extractor.py extract data/policies/POL-2025-006.txt --policy-id POL-2025-006
+2026-10-18 13:15:28,069 INFO HTTP Request: POST https://claude.vocareum.com/v1/messages "HTTP/1.1 200 OK"
+{
+  "confidence": {
+    "coverage_limit": 1.0,
+    "deductible": 0.95,
+    "endorsements": 0.95,
+    "exclusions": 1.0,
+    "policy_type": 1.0,
+    "premium_amount": 1.0
+  },
+  "coverage_limit": 2000000,
+  "deductible": 250.0,
+  "endorsements": [
+    {
+      "limit": null,
+      "name": "UMB-12 Worldwide Personal Injury Extension"
+    },
+    {
+      "limit": 1000000,
+      "name": "UMB-09 Uninsured / Underinsured Motorist Excess"
+    },
+    {
+      "limit": null,
+      "name": "UMB-31 Not-for-Profit Director & Officer Coverage"
+    }
+  ],
+  "exclusions": [
+    "Business pursuits and professional services",
+    "Liability arising from aircraft ownership or operation",
+    "Damage to property owned by or in care of the insured",
+    "Intentional or criminal acts"
+  ],
+  "final_attempt_index": 0,
+  "kind": "extraction",
+  "policy_id": "POL-2025-006",
+  "policy_type": "umbrella",
+  "premium_amount": 612.5,
+  "premium_components": null,
+  "retry_count": 0,
+  "validation_history": []
+}
+[exit code: 0]

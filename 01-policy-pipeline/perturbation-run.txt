@@ -1,0 +1,12 @@
+$ <venv>/Scripts/python run_policy_extractor.py extract perturbation/POL-2025-006-premium-blanked.txt --policy-id POL-2025-006
+2026-10-18 13:15:35,199 INFO HTTP Request: POST https://claude.vocareum.com/v1/messages "HTTP/1.1 200 OK"
+2026-10-18 13:15:35,219 INFO validation_failed
+{
+  "category": "missing_source",
+  "detected_pattern": "premium_amount_absent",
+  "field": "premium_amount",
+  "kind": "escalation",
+  "policy_id": "POL-2025-006",
+  "reason": "Field 'premium_amount' returned null \u2014 the source document does not contain this information. Retry is futile; escalate to human review."
+}
+[exit code: 1]

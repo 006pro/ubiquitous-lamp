@@ -1,0 +1,5 @@
+$ <venv>/Scripts/mypy supply_chain_risk/
+Success: no issues found in 8 source files
+
+$ <venv>/Scripts/ruff check supply_chain_risk/ tests/
+All checks passed!

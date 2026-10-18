@@ -1,0 +1,73 @@
+Environment — Evaluation and Observability capstone
+====================================================
+Author:          Radhakrishnan <r.d.perumal@accenture.com>
+Date run:        2026-10-18
+
+OS:              Microsoft Windows 11 Home Single Language, version 10.0.26300, 64-bit
+Python:          3.14.7 (CPython, 64-bit) — `python --version` -> Python 3.14.7
+Shell used:      Git Bash (captures piped with `tee` / redirected to the .txt files)
+git:             2.55.0.windows.5
+
+Systems run (each from its course project's FINAL-exercise solution/ folder):
+  01-policy-pipeline     Build a Validated, Routed Insurance Policy Extraction Pipeline/04-hitl-routing/solution/
+  02-mortgage-extraction Build a Resilient Mortgage Document Extraction System/04-validate-mathematical-consistency/solution/
+  03-supply-chain        Investigate Supply Chain Risk with Multi-Source Synthesis/03-resilient-coordinator/solution/
+
+Key package versions (identical in all three venvs unless noted):
+  anthropic 1.15.0 · pytest 9.1.1 · mypy 2.4.0 · ruff 0.17.1
+  supply-chain only: chromadb 1.5.9 · sentence-transformers 6.1.0 · torch 2.14.1
+  embedding model all-MiniLM-L6-v2 downloaded on first run to ~/.cache/huggingface
+
+How the venvs were set up
+-------------------------
+One venv per system, installed editable with dev extras, exactly as the course README says:
+
+    python -m venv <venv>
+    <venv>/Scripts/python -m pip install -e ".[dev]"      (run from inside the solution/ folder)
+
+Windows deviation — venv location. Creating `.venv` inside the solution folders failed during
+`ensurepip`: the course folder names are long, and pip's deepest files pushed paths past Windows'
+260-character MAX_PATH ("OSError: [Errno 2] No such file or directory ... found_candidates.py",
+with pip's hint to enable long-path support). Rather than change a system registry setting, each
+venv was created at a short path and used from inside the solution folder:
+
+    <venv> for 01-policy-pipeline     = C:\Users\LAKSHANA\cap\venvs\s1
+    <venv> for 02-mortgage-extraction = C:\Users\LAKSHANA\cap\venvs\s2
+    <venv> for 03-supply-chain        = C:\Users\LAKSHANA\cap\venvs\s3
+
+So every `<venv>/Scripts/...` in the captures is the course's `.venv/bin/...` (Windows: `.venv\Scripts\`).
+The working directory for every command was the system's solution/ folder.
+
+Windows deviation — console encoding (System 3 only). With output redirected to a file, Python on
+Windows encodes stdout as cp1252, and the briefing's em-dashes / warning emoji raised
+`UnicodeEncodeError: 'charmap' codec can't encode characters`. Runs were repeated with Python's
+UTF-8 mode, `PYTHONUTF8=1`, which is the standard fix; nothing in the project changed.
+`HF_HUB_DISABLE_SYMLINKS_WARNING=1` was also set to silence a Windows-only Hugging Face cache notice.
+
+Offline vs live
+---------------
+Offline (no API key in the environment) — the verify gates and replay runs:
+  * all three `pytest` suites (the `@pytest.mark.live` tests skip, as designed: "outside the verify gate")
+  * mypy + ruff for all three
+  * System 1 calibration report (pure Python)
+  * System 2 `mortgage-extract ... --mode replay` runs
+  * System 3 `supply-chain-investigate meridian --offline` (+ `--simulate-timeout`, + perturbations)
+
+Live (Anthropic API through the Udacity/Vocareum proxy, ANTHROPIC_BASE_URL=https://claude.vocareum.com):
+  * System 1 `pipeline` end-to-end run and both `extract` runs of the perturbation
+  * System 2 perturbation runs (`--mode record`) and the live-vs-recorded drift check
+  The key was exported from a local, git-ignored .env; it is not in this pack.
+
+Proxy model note (System 1). The proxy rejects the floating alias `claude-haiku-4-5`
+("Model 'claude-haiku-4-5' is not available for your organization") but serves the same model under
+its pinned snapshot ID `claude-haiku-4-5-20251001`. The policy CLI hard-codes the alias (and its test
+suite asserts on it), so instead of editing the system under test, 01-policy-pipeline/run_policy_extractor.py
+rewrites that one model ID at the SDK call and then runs the unchanged `policy-extractor` main().
+The reviewer model, `claude-sonnet-4-6`, is used as-is. System 2 needed no shim: its CLI has `--model`,
+so live runs pass `--model claude-haiku-4-5-20251001`. The proxy also does not offer the Message Batches
+API, which only the separate `batch` subcommand uses; the `pipeline` run calls the Messages API.
+
+Fixture hygiene. System 2's `--mode record` writes new cache files into fixtures/recorded_responses/.
+Every file those live runs added was deleted afterwards (the folder is back to its 9 shipped files),
+and all perturbations ran on copies of the inputs (edits quoted in perturbation-log.md), so the
+shipped fixtures and data are unchanged.
